@@ -10,3 +10,9 @@
 /httpRequests/
 # 忽略.idea/文件
 /.idea/
+
+# YOLOv5忽略项
+/YOLOV5/runs/
+
+# 忽略权重文件
+*.pt
