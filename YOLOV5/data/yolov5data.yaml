@@ -1,0 +1,10 @@
+path: D:\DeepLearning\Data\yolov5data
+train: images/train
+val: images/val
+
+nc: 4
+names:
+  0: motor
+  1: no helmet
+  2: number
+  3: with helmet
