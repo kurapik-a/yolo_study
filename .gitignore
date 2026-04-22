@@ -10,9 +10,16 @@
 /httpRequests/
 # 忽略.idea/文件
 /.idea/
+.gitignore
+
+# 忽略权重文件
+*.pt
+*.pth
+*.png
+*.xml
+*.jpg
+*.onnx
 
 # YOLOv5忽略项
 /YOLOV5/runs/
 
-# 忽略权重文件
-*.pt
