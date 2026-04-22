@@ -1,0 +1,2 @@
+在此目录下创建Annotations文件夹并放入xml文件
+          以及JPEGImages文件夹并放入jpg文件
