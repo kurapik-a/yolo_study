@@ -1,0 +1,7 @@
+train: D:\硕士准备\YOLOV13\yolov13-main\dataset\images\train  # train images (relative to 'path') 4 images
+val: D:\硕士准备\YOLOV13\yolov13-main\dataset\images\val  # val images (relative to 'path') 4 images
+
+nc: 2
+
+# class names
+names: ['cat','dog']

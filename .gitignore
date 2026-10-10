@@ -1,0 +1,80 @@
+# ============================================================
+#  YOLO 学习合集 —— Git 忽略规则
+#  原则：只提交源码、配置与训练日志；大体积二进制一律忽略
+# ============================================================
+
+# ---------- 1. 权重 / 模型文件 ----------
+# 官方预训练权重（yolov8s.pt / yolov12n.pt / yolov13n.pt）与训练产物（best.pt / last.pt）
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.onnx
+*.engine
+*.trt
+*.weights
+*.h5
+*.pb
+*.tflite
+*.mlmodel
+
+# ---------- 2. 训练与推理输出 ----------
+# runs/ 下的日志（args.yaml、results.csv、训练曲线图）需要保留，
+# 但视频与权重体积过大 —— 上面 *.pt 已覆盖权重，此处补充视频
+*.avi
+*.mp4
+*.mov
+*.mkv
+*.gif
+
+# ---------- 3. 数据集 ----------
+# 猫狗分类训练集、yolotest 测试集等一律不入库
+dataset/
+datasets/
+yolotest/
+**/images/train/
+**/images/val/
+**/images/test/
+**/labels/train/
+**/labels/val/
+**/labels/test/
+*.cache
+
+# ---------- 4. 安装包 / 压缩包 ----------
+# 含 2.6GB 的 PyTorch 安装包，必须忽略
+*.whl
+*.zip
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+*.xz
+
+# ---------- 5. 论文与大型文档 ----------
+*.pdf
+
+# ---------- 6. IDE / 编辑器 ----------
+.idea/
+.vscode/
+*.iml
+*.suo
+*.user
+*.swp
+*~
+
+# ---------- 7. Python ----------
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# ---------- 8. 系统文件 ----------
+Thumbs.db
+Desktop.ini
+.DS_Store

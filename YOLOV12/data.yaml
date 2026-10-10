@@ -1,0 +1,7 @@
+train: D:\2-Python\1-YOLO\YOLOv9\new-yolov9\yolotest\images\train  # train images (relative to 'path') 4 images
+val: D:\2-Python\1-YOLO\YOLOv9\new-yolov9\yolotest\images\val  # val images (relative to 'path') 4 images
+
+nc: 2
+
+# class names
+names: ['dog','cat']

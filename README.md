@@ -1,11 +1,19 @@
 # YOLO 学习合集
 
-YOLO 系列目标检测的学习与复现仓库，包含两个部分：
+YOLO 系列目标检测的学习与复现仓库，覆盖 YOLOv1 / v5 / v8 / v12 / v13 五个版本：
 
-| 目录 | 性质 | 说明 |
-|---|---|---|
-| [`YOLOV1/`](YOLOV1/) | **从零复现** | 基于 PyTorch 手写 YOLOv1，主干网络替换为改进的 ResNet50，用于**摩托车头盔佩戴检测** |
-| [`YOLOV5/`](YOLOV5/) | 框架源码 | ultralytics YOLOv5 完整代码库，用于对照学习与迁移实验 |
+| 目录 | 性质 | 任务 | 说明 |
+|---|---|---|---|
+| [`YOLOV1/`](YOLOV1/) | **从零复现** | 摩托车头盔检测（4 类） | 基于 PyTorch 手写 YOLOv1，主干网络替换为改进的 ResNet50 |
+| [`YOLOV5/`](YOLOV5/) | 框架源码 | — | ultralytics YOLOv5 完整代码库，用于对照学习 |
+| [`YOLOV8/`](YOLOV8/) | 框架源码 + 微调 | 摩托车头盔检测（4 类） | ultralytics YOLOv8，含微调脚本与数据集配置 |
+| [`YOLOV12/`](YOLOV12/) | 框架源码 + 训练 | 猫狗分类（2 类） | ultralytics YOLOv12，含训练脚本、数据集与预测输出 |
+| [`YOLOV13/`](YOLOV13/) | 框架源码 + 训练 | 猫狗分类（2 类） | ultralytics YOLOv13，含 12 次训练实验记录 |
+
+**两条任务主线：**
+
+- **摩托车头盔佩戴检测**（4 类：`no helmet` / `motor` / `number` / `with helmet`）—— 见于 `YOLOV1` 与 `YOLOV8`
+- **猫狗分类**（2 类：`cat` / `dog`）—— 见于 `YOLOV12` 与 `YOLOV13`
 
 ---
 
@@ -134,26 +142,132 @@ YOLOV5/
 
 ---
 
+## 三、YOLOV8 —— 头盔检测微调
+
+`YOLOV8/` 为 ultralytics YOLOv8 代码库（`ultralytics/yolo/` 的早期目录结构），在其上做了头盔检测的微调实验。
+
+### 自定义文件
+
+| 文件 | 说明 |
+|---|---|
+| `train.py` | 微调脚本：加载 `yolov8s.pt`，数据集指向 `score_data.yaml`，10 epoch，batch 4，SGD |
+| `score_data.yaml` | 数据集配置：**nc=4**，类别 `motor` / `no helmet` / `number` / `with helmet` |
+| `inference.py` | 推理脚本 |
+| `export.py` | 模型导出 |
+
+`score_data.yaml` 中数据路径指向本机 `D:\DeepLearning\Data\yolov5data`，在别处运行需改为实际路径。
+
+> 与 `YOLOV1/` 是**同一任务的两种实现**：YOLOV1 是手写复现，YOLOV8 是框架微调。对照两者可直观体会从零实现与工程框架的差异。
+
+---
+
+## 四、YOLOV12 —— 猫狗分类训练
+
+`YOLOV12/` 为 ultralytics YOLOv12 代码库，配套一次完整的猫狗检测训练实践。
+
+### 自定义文件
+
+| 文件 | 说明 |
+|---|---|
+| `train.py` | 从 `yolov12.yaml` 构建模型并加载 `yolov12n.pt`，50 epoch，batch 4，`close_mosaic=10` |
+| `detect.py` | 推理脚本 |
+| `data.yaml` | 数据集配置：**nc=2**，类别 `dog` / `cat` |
+| `app.py` | 应用入口（来自教程示例） |
+| `xml转txt.py` | 标注格式转换：VOC XML → YOLO TXT |
+| `划分.py` | 数据集划分（train / val） |
+| `logs/` | 各规模模型的 benchmark 结果：`yolov12{n,s,m,l,x}.csv` |
+
+### 训练产出
+
+`runs/detect/` 下保留了预测结果（图像），预测视频已按体积忽略。
+数据集 `yolotest/`（dog / cat 图像）本地保留，仓库内未提交。
+
+---
+
+## 五、YOLOV13 —— 猫狗分类（含实验记录）
+
+`YOLOV13/` 为 ultralytics YOLOv13 代码库，保留了较完整的训练实验过程。
+
+### 自定义文件
+
+| 文件 | 说明 |
+|---|---|
+| `train.py` | 从 `yolov13n-seg.yaml` 构建模型并加载 `yolov13n.pt`，10 epoch，batch 4 |
+| `detect.py` | 推理脚本 |
+| `data.yaml` | 数据集配置：**nc=2**，类别 `cat` / `dog` |
+| `json_to_txt.py` | 标注格式转换：LabelMe JSON → YOLO TXT |
+| `xml转txt.py` | 标注格式转换：VOC XML → YOLO TXT |
+| `划分.py` | 数据集划分 |
+| `yolov13n-seg.yaml` | 分割任务模型配置 |
+
+### 训练实验记录
+
+`runs/train/` 下保存了 **12 次训练实验**（`exp`、`exp2` ~ `exp12`），每次实验保留：
+
+```
+runs/train/expN/
+├── args.yaml                  # 该次训练的全部超参数
+├── results.csv                # 逐 epoch 的损失与指标（训练日志）
+├── labels.jpg                 # 标注分布统计
+├── labels_correlogram.jpg     # 标注相关性分析
+└── train_batch{0,1,2}.jpg     # 训练批次可视化
+```
+
+> 各实验目录下的 `weights/`（`best.pt` / `last.pt`）已按体积忽略，需要时从本地备份取回。
+
+`runs/detect/` 与 `runs/segment/` 保留了预测结果图像。
+
+> ⚠️ **注意 `data.yaml` 的类别顺序**：`YOLOV12` 是 `['dog','cat']`，`YOLOV13` 是 `['cat','dog']`，两者相反。跨版本复用权重或对比结果时容易搞错，需留意。
+
+---
+
+## 六、关于 .gitignore
+
+本仓库**只提交源码、配置与训练日志**，大体积二进制文件一律忽略。规则见 [`.gitignore`](.gitignore)：
+
+| 忽略类别 | 具体内容 | 体积 |
+|---|---|---|
+| 模型权重 | `*.pt` / `*.pth` / `*.onnx` / `*.engine` 等 | 约 110 MB |
+| 视频 | `*.avi` / `*.mp4`（含预测输出与示例视频） | 约 110 MB |
+| 数据集 | `dataset/`、`yolotest/`、`**/images/{train,val}` | — |
+| 安装包 | `*.whl`（含 2.6 GB 的 PyTorch 安装包） | 约 2.6 GB |
+| 论文与压缩包 | `*.pdf` / `*.zip` | 约 40 MB |
+| IDE 与缓存 | `.idea/` / `__pycache__/` 等 | — |
+
+**刻意保留**的内容：
+
+- `runs/train/exp*/` 下的 `args.yaml`、`results.csv` 与训练曲线图 —— 这是训练日志，是本仓库最有参考价值的部分
+- `assets/` —— ultralytics 各版本 README 引用的配图（约 22 MB）
+
+---
+
 ## 环境要求
 
 | 依赖 | 版本 |
 |---|---|
-| Python | 3.7+ |
-| PyTorch | 1.7.1（已测试 1.11.0 亦可正常运行） |
+| Python | 3.7+（YOLOV12 使用 3.11） |
+| PyTorch | 1.7.1（YOLOV1，已测试 1.11.0）；YOLOV12 使用 2.2.2+cu118 |
 | torchvision | 与 PyTorch 匹配 |
 | opencv-python / numpy / Pillow | 近期版本 |
 | CUDA | 训练建议使用 GPU |
 
-YOLOV5 部分另有独立依赖，见 `YOLOV5/requirements.txt`。
+各版本另有独立依赖，见各自目录下的 `requirements.txt`。
 
 ---
 
 ## 数据集与权重
 
-仓库中**不包含**训练数据与模型权重（体积原因），相关文件存放在百度网盘：
+仓库中**不包含**训练数据与模型权重（体积原因，`.gitignore` 已排除）：
 
-> 路径：`深度学习/YOLO【gitee仓库】`
+| 文件 | 位置 | 大小 |
+|---|---|---|
+| `yolov8s.pt` | `YOLOV8/` | 21.5 MB |
+| `yolov12n.pt` | `YOLOV12/` | 5.3 MB |
+| `yolov13n.pt` | `YOLOV13/` | 10.1 MB |
+| `best.pt`（猫狗分类训练成果） | `YOLOV13/` | 5.7 MB |
+| `runs/train/exp*/weights/` | `YOLOV13/` | 约 67 MB |
 
+官方预训练权重可从 ultralytics 官方发布页下载；自训练产物请从本地备份取回。
 `YOLOV1/README.md` 中另附有 VOC2007 数据集与自建数据集的网盘链接。
 
 ---
@@ -162,7 +276,10 @@ YOLOV5 部分另有独立依赖，见 `YOLOV5/requirements.txt`。
 
 - 训练时主干网络预训练权重由 `torch.utils.model_zoo` 在线下载。实际使用中发现 **VS Code 与 PyCharm 中的下载速度存在差异**，若长时间卡在下载阶段，可手动下载 `resnet50-19c8e357.pth` 后本地加载。
 - `YOLOV1/` 的自写实现参考了 [YOLOV1-pytorch](https://blog.csdn.net/ing100/article/details/125155065) 的改进 ResNet50 主干思路，在此基础上适配了头盔检测任务。
+- `YOLOV12/` 与 `YOLOV13/` 的 `train.py`、`detect.py` 等脚本源自公开教程（作者署名「挂科边缘」），非本人原创，此处仅作学习留档。
+- 各目录内的 `data.yaml` / `score_data.yaml` 中的绝对路径均为本机路径，换机器运行需自行修改。
 
 ## 许可证
 
-`YOLOV5/` 部分遵循其原始 AGPL-3.0 许可。`YOLOV1/` 为学习复现代码，仅供学习交流。
+`YOLOV5/`、`YOLOV8/`、`YOLOV12/`、`YOLOV13/` 部分遵循其原始 **AGPL-3.0** 许可。
+`YOLOV1/` 为学习复现代码，仅供学习交流。
