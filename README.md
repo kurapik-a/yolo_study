@@ -180,7 +180,19 @@ YOLOV5/
 ### 训练产出
 
 `runs/detect/` 下保留了预测结果（图像），预测视频已按体积忽略。
-数据集 `yolotest/`（dog / cat 图像）本地保留，仓库内未提交。
+
+### 测试案例集
+
+`yolotest/` 保留完整（体积小，便于复现）：
+
+```
+yolotest/
+├── data.yaml            # 数据集配置
+├── images/train/        # 4 张训练图
+├── images/val/          # 6 张验证图
+├── labels/train/        # 对应 YOLO 格式标签
+└── labels/val/
+```
 
 ---
 
@@ -217,6 +229,18 @@ runs/train/expN/
 
 `runs/detect/` 与 `runs/segment/` 保留了预测结果图像。
 
+### 测试案例集
+
+`dataset/` 保留完整（猫狗分类的测试案例照片与标签）：
+
+```
+dataset/
+├── classes.txt          # 类别名列表
+├── images/train/        # 45 张训练图（cat.* / dog.*）
+├── images/val/          # 12 张验证图
+└── labels/train|val/    # 对应 YOLO 格式标签
+```
+
 > ⚠️ **注意 `data.yaml` 的类别顺序**：`YOLOV12` 是 `['dog','cat']`，`YOLOV13` 是 `['cat','dog']`，两者相反。跨版本复用权重或对比结果时容易搞错，需留意。
 
 ---
@@ -229,15 +253,23 @@ runs/train/expN/
 |---|---|---|
 | 模型权重 | `*.pt` / `*.pth` / `*.onnx` / `*.engine` 等 | 约 110 MB |
 | 视频 | `*.avi` / `*.mp4`（含预测输出与示例视频） | 约 110 MB |
-| 数据集 | `dataset/`、`yolotest/`、`**/images/{train,val}` | — |
 | 安装包 | `*.whl`（含 2.6 GB 的 PyTorch 安装包） | 约 2.6 GB |
 | 论文与压缩包 | `*.pdf` / `*.zip` | 约 40 MB |
-| IDE 与缓存 | `.idea/` / `__pycache__/` 等 | — |
+| 数据集（其他） | `dataset/`、`datasets/`、`yolotest/` —— 见下方白名单 | — |
+| 标签缓存 | `*.cache`（ultralytics 自动生成，可重建） | — |
+| IDE 与缓存 | `.idea/` / `__pycache__/` / `.vscode/` | — |
 
 **刻意保留**的内容：
 
 - `runs/train/exp*/` 下的 `args.yaml`、`results.csv` 与训练曲线图 —— 这是训练日志，是本仓库最有参考价值的部分
+- **两个测试案例集**（白名单放行，共约 1.97 MB）：
+  - `YOLOV12/yolotest/` —— 10 张测试图 + 标签 + `data.yaml`
+  - `YOLOV13/dataset/` —— 57 张测试图 + 标签 + `classes.txt`
 - `assets/` —— ultralytics 各版本 README 引用的配图（约 22 MB）
+
+> Git 无法重新包含「父目录已被排除」的文件，因此白名单必须写在**顶层目录**上
+> （`.gitignore` 中为 `!YOLOV12/yolotest/` 与 `!YOLOV13/dataset/`）。新增其他数据集时，
+> 保持默认忽略即可；如需入库，同样在文件末尾追加顶层目录白名单。
 
 ---
 
@@ -257,7 +289,9 @@ runs/train/expN/
 
 ## 数据集与权重
 
-仓库中**不包含**训练数据与模型权重（体积原因，`.gitignore` 已排除）：
+**测试案例集已入库**（`YOLOV12/yolotest/`、`YOLOV13/dataset/`），clone 后可直接用于复现训练与验证。
+
+**模型权重未入库**（体积原因，`.gitignore` 已排除）：
 
 | 文件 | 位置 | 大小 |
 |---|---|---|

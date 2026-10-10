@@ -28,17 +28,17 @@
 *.gif
 
 # ---------- 3. 数据集 ----------
-# 猫狗分类训练集、yolotest 测试集等一律不入库
+# 大体积数据集不入库（如后续新增其他数据集，按名字加到下面即可）
 dataset/
 datasets/
 yolotest/
-**/images/train/
-**/images/val/
-**/images/test/
-**/labels/train/
-**/labels/val/
-**/labels/test/
 *.cache
+
+# 白名单：两个测试案例集（体积小，便于复现训练与验证）
+# 注意：Git 无法重新包含「父目录已被排除」的文件，
+# 因此这里排除的是顶层目录，白名单也必须写顶层目录
+!YOLOV12/yolotest/
+!YOLOV13/dataset/
 
 # ---------- 4. 安装包 / 压缩包 ----------
 # 含 2.6GB 的 PyTorch 安装包，必须忽略
